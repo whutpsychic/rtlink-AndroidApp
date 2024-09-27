@@ -6,26 +6,11 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar"
+    <com.rtlink.androidapp.components.TopBar
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="#1993fa"
-        android:minHeight="50dp">
-
-        <TextView
-            android:id="@+id/title0"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16sp"
-            android:letterSpacing="0.2"
-            android:text="UI"
-            android:textColor="#fff"
-            android:textFontWeight="500"
-            android:textSize="18sp" />
-
-    </androidx.appcompat.widget.Toolbar>
-
+        android:layout_height="wrap_content"
+        app:canPop="true"
+        app:title="UI" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"

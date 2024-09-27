@@ -5,7 +5,6 @@ import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.appcompat.widget.Toolbar
 
 class ComButtonActivity : ComponentActivity() {
 
@@ -16,15 +15,6 @@ class ComButtonActivity : ComponentActivity() {
         // 显示注册的页面
         setContentView(R.layout.com_button)
 
-        // ------------------------------------- 初始化顶部条 -------------------------------------
-        val toolbar = findViewById<Toolbar>(R.id.toolbar)
-        // 设置后退按钮
-        toolbar.setNavigationIcon(R.drawable.backup)
-        // 监听后退按钮点击事件
-        toolbar.setNavigationOnClickListener() {
-            this.finish()
-        }
-        // -------------------------------------------------------------------------------------
         // 设置不可点击的按钮
         registerDisabledBtn(R.id.button6)
         registerDisabledBtn(R.id.button7)
