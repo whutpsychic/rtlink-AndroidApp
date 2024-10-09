@@ -15,9 +15,15 @@ class IndexUIActivity : ComponentActivity() {
 
         // 注册点击函数
         // 去往指定页面
-        val pageBtn = this.findViewById<Button>(R.id.button)
-        pageBtn.setOnClickListener {
+        val btnPage = this.findViewById<Button>(R.id.button)
+        btnPage.setOnClickListener {
             val buttonPage = Intent(this, ComButtonActivity::class.java)
+            startActivity(buttonPage)
+        }
+
+        val popupPage = this.findViewById<Button>(R.id.popup)
+        popupPage.setOnClickListener {
+            val buttonPage = Intent(this, ComPopupActivity::class.java)
             startActivity(buttonPage)
         }
 

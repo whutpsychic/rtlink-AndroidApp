@@ -27,6 +27,8 @@
         <activity android:name=".IndexUIActivity" />
         <!--com 按钮活动-->
         <activity android:name=".ComButtonActivity" />
+        <!--com 遮罩层活动-->
+        <activity android:name=".ComPopupActivity" />
     </application>
 
 </manifest>
