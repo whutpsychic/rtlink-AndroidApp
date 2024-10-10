@@ -29,7 +29,7 @@ class IndexUIActivity : ComponentActivity() {
 
         val webviewPage = this.findViewById<Button>(R.id.webview)
         webviewPage.setOnClickListener {
-            val tagetPage = Intent(this, WebviewActivity::class.java)
+            val tagetPage = Intent(this, WebViewActivity::class.java)
             startActivity(tagetPage)
         }
 
