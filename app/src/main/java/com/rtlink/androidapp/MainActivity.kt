@@ -12,7 +12,7 @@ class MainActivity : ComponentActivity() {
         // 沉浸式渲染
         enableEdgeToEdge()
         // 显示主入口页面
-        setContentView(R.layout.main)
+        setContentView(R.layout.activity_main)
         // 注册点击函数
         val btnUI = this.findViewById<Button>(R.id.btn_ui)
         btnUI.setOnClickListener {

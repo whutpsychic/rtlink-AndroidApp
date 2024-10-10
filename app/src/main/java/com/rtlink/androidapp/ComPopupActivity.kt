@@ -2,6 +2,8 @@ package com.rtlink.androidapp
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.view.LayoutInflater
+import android.view.View
 import android.widget.Button
 import androidx.activity.ComponentActivity
 import com.rtlink.androidapp.utils.makeToast
@@ -18,20 +20,32 @@ class ComPopupActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         // 显示注册的页面
-        setContentView(R.layout.com_popup)
+        setContentView(R.layout.activity_com_popup)
 
-        val btn1 = findViewById<Button>(R.id.btn1)
-        btn1.setOnClickListener {
+        val btn0 = findViewById<Button>(R.id.btn0)
+        btn0.setOnClickListener {
             val dialog = AlertDialog.Builder(this).setIcon(R.mipmap.ic_launcher).setTitle("标题")
                 .setMessage("一般的警告文本对话框")
                 .setPositiveButton("确定") { _, _ ->
                     makeToast(this, "你点击了确定按钮")
-                }.setNegativeButton("取消") { _, _ ->
-                    makeToast(this, "你点击了取消按钮")
-                }.setNeutralButton("其他") { _, _ ->
-                    makeToast(this, "你点击了其他按钮")
                 }
                 .create()
+            dialog.show()
+        }
+
+        val btn1 = findViewById<Button>(R.id.btn1)
+        btn1.setOnClickListener {
+            val dialog =
+                AlertDialog.Builder(this).setIcon(R.mipmap.ic_launcher).setTitle("你确定吗？")
+                    .setMessage("完整的确认对话框")
+                    .setPositiveButton("确定") { _, _ ->
+                        makeToast(this, "你点击了确定按钮")
+                    }.setNegativeButton("取消") { _, _ ->
+                        makeToast(this, "你点击了取消按钮")
+                    }.setNeutralButton("其他") { _, _ ->
+                        makeToast(this, "你点击了其他按钮")
+                    }
+                    .create()
             dialog.show()
         }
 
@@ -42,13 +56,6 @@ class ComPopupActivity : ComponentActivity() {
                     .setItems(R.array.Radio_dialog_items) { _, index ->
                         val items = resources.getStringArray(R.array.Radio_dialog_items)
                         makeToast(this, "你选择的位置是：${index}，你选择的洲是${items[index]}")
-                    }
-                    .setPositiveButton("确定") { _, _ ->
-                        makeToast(this, "你点击了确定按钮")
-                    }.setNeutralButton("其他") { _, _ ->
-                        makeToast(this, "你点击了其他按钮")
-                    }.setNegativeButton("取消") { _, _ ->
-                        makeToast(this, "你点击了取消按钮")
                     }
                     .create()
             dialog.show()
@@ -106,7 +113,23 @@ class ComPopupActivity : ComponentActivity() {
                     .create()
             dialog.show()
         }
+
+        val btn5 = findViewById<Button>(R.id.btn5)
+        btn5.setOnClickListener {
+            val factory = LayoutInflater.from(this)
+            val loginView: View = factory.inflate(R.layout.login_view, null)
+            makeToast(this, "此对话框点击幕布不可关闭")
+            val dialog =
+                AlertDialog.Builder(this).setIcon(R.mipmap.ic_launcher).setTitle("自定义对话框")
+                    .setCancelable(false)
+                    .setView(loginView)
+                    .setPositiveButton("登录") { _, _ ->
+                        makeToast(this, "你点击了登录按钮")
+                    }.setNegativeButton("取消") { _, _ ->
+                        makeToast(this, "你点击了取消按钮")
+                    }
+                    .create()
+            dialog.show()
+        }
     }
-
-
 }

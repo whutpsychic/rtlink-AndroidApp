@@ -11,7 +11,7 @@ class IndexUIActivity : ComponentActivity() {
         // 沉浸式渲染
 //        enableEdgeToEdge()
         // 显示注册的页面
-        setContentView(R.layout.index_ui)
+        setContentView(R.layout.activity_index_ui)
 
         // 注册点击函数
         // 去往指定页面

@@ -13,7 +13,7 @@ class ComButtonActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // 显示注册的页面
-        setContentView(R.layout.com_button)
+        setContentView(R.layout.activity_com_button)
 
         // 设置不可点击的按钮
         registerDisabledBtn(R.id.button6)
