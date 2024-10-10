@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+    <!-- 入网权限 -->
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -11,6 +13,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.RtlinkAndroidapp"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <!--主入口活动-->
         <activity
@@ -27,8 +30,11 @@
         <activity android:name=".IndexUIActivity" />
         <!--com 按钮活动-->
         <activity android:name=".ComButtonActivity" />
-        <!--com 遮罩层活动-->
+        <!--com 对话框活动-->
         <activity android:name=".ComPopupActivity" />
+        <!-- webview 活动-->
+        <activity android:name=".WebviewActivity" />
+
     </application>
 
 </manifest>

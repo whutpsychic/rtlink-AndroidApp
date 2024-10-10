@@ -17,14 +17,20 @@ class IndexUIActivity : ComponentActivity() {
         // 去往指定页面
         val btnPage = this.findViewById<Button>(R.id.button)
         btnPage.setOnClickListener {
-            val buttonPage = Intent(this, ComButtonActivity::class.java)
-            startActivity(buttonPage)
+            val tagetPage = Intent(this, ComButtonActivity::class.java)
+            startActivity(tagetPage)
         }
 
         val popupPage = this.findViewById<Button>(R.id.popup)
         popupPage.setOnClickListener {
-            val buttonPage = Intent(this, ComPopupActivity::class.java)
-            startActivity(buttonPage)
+            val tagetPage = Intent(this, ComPopupActivity::class.java)
+            startActivity(tagetPage)
+        }
+
+        val webviewPage = this.findViewById<Button>(R.id.webview)
+        webviewPage.setOnClickListener {
+            val tagetPage = Intent(this, WebviewActivity::class.java)
+            startActivity(tagetPage)
         }
 
     }
