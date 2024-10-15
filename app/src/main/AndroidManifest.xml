@@ -39,9 +39,8 @@
         <activity android:name=".ComButtonActivity" />
         <!--com 对话框活动-->
         <activity android:name=".ComPopupActivity" />
-        <!-- webview 活动-->
+        <!-- webView 活动-->
         <activity android:name=".WebViewActivity" />
-
 
         <provider
             android:name="androidx.core.content.FileProvider"
