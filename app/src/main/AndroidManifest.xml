@@ -19,7 +19,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.RtlinkAndroidapp"
+        android:theme="@style/Theme.RtlinkAndroidApp"
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <!--主入口活动-->
@@ -27,20 +27,28 @@
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.RtlinkAndroidapp">
+            android:theme="@style/Theme.RtlinkAndroidApp">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <!--UI 目录活动-->
-        <activity android:name=".IndexUIActivity" />
+        <activity
+            android:name=".IndexUIActivity"
+            android:theme="@style/Theme.default" />
         <!--com 按钮活动-->
-        <activity android:name=".ComButtonActivity" />
+        <activity
+            android:name=".ComButtonActivity"
+            android:theme="@style/Theme.default" />
         <!--com 对话框活动-->
-        <activity android:name=".ComPopupActivity" />
+        <activity
+            android:name=".ComPopupActivity"
+            android:theme="@style/Theme.default" />
         <!-- webView 活动-->
-        <activity android:name=".WebViewActivity" />
+        <activity
+            android:name=".WebViewActivity"
+            android:theme="@style/Theme.default" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
