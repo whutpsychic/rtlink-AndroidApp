@@ -20,8 +20,7 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import com.rtlink.androidapp.utils.checkPermissionBeforeDo
 import com.rtlink.androidapp.utils.makeToast
 import com.rtlink.androidapp.webIO.Toast
 import java.text.SimpleDateFormat
@@ -37,10 +36,13 @@ import java.util.Locale
 // - 所有类型的文件可上传ok
 // - 解决打开文件选择器但不做选择退出后闪退的问题ok
 // ************************************************************************
+// ************************** 加载本地html(离线运行) *************************
+// - createWebHashHistory + base: './'
+// ************************************************************************
 class WebViewActivity : ComponentActivity() {
 
     // webView 显示的网址
-    private val URL = "http://192.168.1.71:8088/"
+    private val URL = "http://192.168.0.2:8088"
 
     // webView 实例
     private var webView: WebView? = null
@@ -48,7 +50,7 @@ class WebViewActivity : ComponentActivity() {
     // finish函数触发次数优化（使之仅触发一次）
     private var finishedAlready: Boolean = false
 
-    //
+    // 临时存放文件选取回调函数
     private var fileUploadCallback: ValueCallback<Array<Uri>>? = null
 
     companion object {
@@ -90,11 +92,10 @@ class WebViewActivity : ComponentActivity() {
         // 注意要启用JS，默认是不启用的，否则将导致某些页面无法显示
         webView?.settings?.javaScriptEnabled = true
 
-//        webView?.settings?.allowFileAccess = true
-//        webView?.settings?.allowContentAccess = true
-//        webView?.settings?.domStorageEnabled = true
-//        webView?.settings?.javaScriptCanOpenWindowsAutomatically = true
-//        webView?.settings?.mediaPlaybackRequiresUserGesture = false
+        // ******** 允许访问本地文件系统（加载本地.html/.css/.js等文件） ********
+        webView?.settings?.allowFileAccess = true;
+        webView?.settings?.allowFileAccessFromFileURLs = true;
+        // **************************************************************
 
         // 启用此行代码可显示原生web端的一些功能比如：显示alert()
         webView?.webChromeClient = object : WebChromeClient() {
@@ -177,18 +178,18 @@ class WebViewActivity : ComponentActivity() {
 
 //                Handler().postDelayed(Runnable {
 //                    // ******************* 向 webView 发出函数执行指令 *******************
-//                    webView.evaluateJavascript(
+//                    webView?.evaluateJavascript(
 //                        "alert('这是一条由native端发起，向web端传送的指令')",
 //                        null
 //                    )
 //                }, 3000)
             }
-
-
         }
 
         // 加载指定地址
         webView?.loadUrl(URL)
+        // 加载本地html
+//        webView?.loadUrl("file:///android_asset/index.html");
         // 给webJS端安装功能
         installJsFns(webView)
     }
@@ -217,26 +218,15 @@ class WebViewActivity : ComponentActivity() {
         }
     }
 
-
     // 准备启用相机
     // 判断一下是否已经具备了访问相机的权限
     private fun prepareCamera() {
-        // 如果有相机权限则直接打开相机
-        if (ContextCompat.checkSelfPermission(
-                this@WebViewActivity,
-                android.Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            launchCamera()
-        }
-        // 否则请求相机权限
-        else {
-            ActivityCompat.requestPermissions(
-                this@WebViewActivity,
-                arrayOf(android.Manifest.permission.CAMERA),
-                CAMERA_PERMISSION_REQUEST_CODE
-            )
-        }
+        checkPermissionBeforeDo(
+            this@WebViewActivity,
+            android.Manifest.permission.CAMERA,
+            CAMERA_PERMISSION_REQUEST_CODE,
+            ::launchCamera
+        )
     }
 
     // 启用相机
