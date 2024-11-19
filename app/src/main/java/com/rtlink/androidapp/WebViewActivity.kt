@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
+import android.os.Handler
 import android.provider.MediaStore
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
@@ -22,7 +23,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
 import com.rtlink.androidapp.utils.checkPermissionBeforeDo
 import com.rtlink.androidapp.utils.makeToast
-import com.rtlink.androidapp.webIO.Toast
+import com.rtlink.androidapp.webIO.Index
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -149,6 +150,7 @@ class WebViewActivity : ComponentActivity() {
 
                 return true
             }
+
         }
 
         // 一般生命周期监测
@@ -186,17 +188,20 @@ class WebViewActivity : ComponentActivity() {
             }
         }
 
+        // 清除缓存
+        webView?.clearCache(true)
+
         // 加载指定地址
         webView?.loadUrl(URL)
         // 加载本地html
 //        webView?.loadUrl("file:///android_asset/index.html");
-        // 给webJS端安装功能
+        // 给webJS端安装功能函数
         installJsFns(webView)
     }
 
     // 给webJS端安装功能
     private fun installJsFns(w: WebView?) {
-        w?.addJavascriptInterface(Toast(this), GlobalConfig.IOName)
+        w?.addJavascriptInterface(Index(this@WebViewActivity, w), GlobalConfig.IOName)
     }
 
     // 监测请求权限后的回调函数

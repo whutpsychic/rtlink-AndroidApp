@@ -5,5 +5,8 @@ class GlobalConfig {
     companion object {
         // web端JS调用原生接口时的对象名字
         val IOName: String = "Android"
+
+        // RAM名称
+        val RamName: String = "RTMB"
     }
 }

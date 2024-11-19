@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
 
         // =========================== 调试专用，直接干到当前开发页面 ===========================
         val currDev = Intent(this, WebViewActivity::class.java)
-//        startActivity(currDev)
+        startActivity(currDev)
         // =================================================================================
     }
 
