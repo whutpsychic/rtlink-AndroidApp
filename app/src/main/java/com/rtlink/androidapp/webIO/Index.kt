@@ -1,6 +1,7 @@
 package com.rtlink.androidapp.webIO
 
 import android.app.ProgressDialog
+import android.content.Context
 import android.os.Handler
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
@@ -8,6 +9,7 @@ import androidx.activity.ComponentActivity
 import com.rtlink.androidapp.GlobalConfig.Companion.RamName
 import com.rtlink.androidapp.utils.makeToast
 import com.rtlink.androidapp.webIO.CallbackKeys.Companion.MODAL_PROGRESS
+import com.rtlink.androidapp.webIO.CallbackKeys.Companion.READ_LOCAL
 
 class Index(private val activity: ComponentActivity, private val webView: WebView?) {
 
@@ -73,13 +75,26 @@ class Index(private val activity: ComponentActivity, private val webView: WebVie
     }
     /**  ----------------------------------------------------------------------------- */
     /** Write local storage from web  */
+    /** Work with SharedPreferences  */
     @JavascriptInterface
-    fun writeLocal() {
+    fun writeLocal(key: String, value: String) {
+        val sharedPref = activity.getPreferences(Context.MODE_PRIVATE) ?: return
+        with(sharedPref.edit()) {
+            putString(key, value)
+            apply()
+        }
     }
 
     /** Read local storage from web  */
     @JavascriptInterface
-    fun readLocal() {
+    fun readLocal(key: String) {
+        val sharedPref = activity.getPreferences(Context.MODE_PRIVATE) ?: return
+        val defaultValue: String = ""
+        val content = sharedPref.getString(key, defaultValue)
+
+        activity.runOnUiThread {
+            webView?.evaluateJavascript("$RamName.callback.$READ_LOCAL('$content')", null)
+        }
     }
 
     /** Dial numbers to prepare a phone call  */

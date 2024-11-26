@@ -1,4 +1,4 @@
-package com.rtlink.androidapp
+package com.rtlink.androidapp.activities
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -11,7 +11,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
-import android.os.Handler
 import android.provider.MediaStore
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
@@ -21,6 +20,8 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
+import com.rtlink.androidapp.GlobalConfig
+import com.rtlink.androidapp.R
 import com.rtlink.androidapp.utils.checkPermissionBeforeDo
 import com.rtlink.androidapp.utils.makeToast
 import com.rtlink.androidapp.webIO.Index

@@ -1,9 +1,10 @@
-package com.rtlink.androidapp
+package com.rtlink.androidapp.activities
 
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.activity.ComponentActivity
+import com.rtlink.androidapp.R
 
 class IndexUIActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -17,20 +18,20 @@ class IndexUIActivity : ComponentActivity() {
         // 去往指定页面
         val btnPage = this.findViewById<Button>(R.id.button)
         btnPage.setOnClickListener {
-            val tagetPage = Intent(this, ComButtonActivity::class.java)
-            startActivity(tagetPage)
+            val targetPage = Intent(this, ComButtonActivity::class.java)
+            startActivity(targetPage)
         }
 
         val popupPage = this.findViewById<Button>(R.id.popup)
         popupPage.setOnClickListener {
-            val tagetPage = Intent(this, ComPopupActivity::class.java)
-            startActivity(tagetPage)
+            val targetPage = Intent(this, ComPopupActivity::class.java)
+            startActivity(targetPage)
         }
 
-        val webviewPage = this.findViewById<Button>(R.id.webview)
-        webviewPage.setOnClickListener {
-            val tagetPage = Intent(this, WebViewActivity::class.java)
-            startActivity(tagetPage)
+        val webViewPage = this.findViewById<Button>(R.id.webview)
+        webViewPage.setOnClickListener {
+            val targetPage = Intent(this, WebViewActivity::class.java)
+            startActivity(targetPage)
         }
 
     }

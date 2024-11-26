@@ -1,10 +1,11 @@
-package com.rtlink.androidapp
+package com.rtlink.androidapp.activities
 
 import android.os.Bundle
 import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import com.rtlink.androidapp.R
 
 class ComButtonActivity : ComponentActivity() {
 

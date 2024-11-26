@@ -1,4 +1,4 @@
-package com.rtlink.androidapp
+package com.rtlink.androidapp.activities
 
 import android.app.AlertDialog
 import android.os.Bundle
@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.Button
 import androidx.activity.ComponentActivity
+import com.rtlink.androidapp.R
 import com.rtlink.androidapp.utils.makeToast
 
 class ComPopupActivity : ComponentActivity() {

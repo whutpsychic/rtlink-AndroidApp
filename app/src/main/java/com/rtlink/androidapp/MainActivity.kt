@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.widget.Button
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
+import com.rtlink.androidapp.activities.IndexUIActivity
+import com.rtlink.androidapp.activities.WebViewActivity
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,5 +34,3 @@ class MainActivity : ComponentActivity() {
         startActivity(intent)
     }
 }
-
-

@@ -11,5 +11,9 @@ class CallbackKeys {
 
         // modalProgress()
         const val MODAL_PROGRESS: String = "modalProgressCallback"
+
+        // readLocal()
+        const val READ_LOCAL: String = "readLocalCallback"
+
     }
 }
