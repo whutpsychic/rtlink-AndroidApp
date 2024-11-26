@@ -4,6 +4,12 @@ class CallbackKeys {
 
     companion object {
         // modalTips()
-        val modalTips: String = "modalTipsCallback"
+        const val MODAL_TIPS: String = "modalTipsCallback"
+
+        // modalConfirm()
+        const val MODAL_CONFIRM: String = "modalConfirmCallback"
+
+        // modalProgress()
+        const val MODAL_PROGRESS: String = "modalProgressCallback"
     }
 }

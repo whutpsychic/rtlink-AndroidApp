@@ -43,7 +43,7 @@ import java.util.Locale
 class WebViewActivity : ComponentActivity() {
 
     // webView 显示的网址
-    private val URL = "http://192.168.0.2:8088"
+    private val URL = "http://192.168.1.71:8088"
 
     // webView 实例
     private var webView: WebView? = null

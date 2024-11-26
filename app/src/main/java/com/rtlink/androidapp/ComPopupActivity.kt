@@ -117,7 +117,7 @@ class ComPopupActivity : ComponentActivity() {
         val btn5 = findViewById<Button>(R.id.btn5)
         btn5.setOnClickListener {
             val factory = LayoutInflater.from(this)
-            val loginView: View = factory.inflate(R.layout.login_view, null)
+            val loginView: View = factory.inflate(R.layout.view_login, null)
             makeToast(this, "此对话框点击幕布不可关闭")
             val dialog =
                 AlertDialog.Builder(this).setIcon(R.mipmap.ic_launcher).setTitle("自定义对话框")
