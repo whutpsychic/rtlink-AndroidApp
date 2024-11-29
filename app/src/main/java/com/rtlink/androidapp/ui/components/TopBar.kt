@@ -1,4 +1,4 @@
-package com.rtlink.androidapp.components
+package com.rtlink.androidapp.ui.components
 
 import android.app.Activity
 import android.content.Context

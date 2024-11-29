@@ -49,6 +49,10 @@
         <activity
             android:name=".activities.WebViewActivity"
             android:theme="@style/Theme.default" />
+        <!-- 扫码活动-->
+        <activity
+            android:name=".activities.ScanningActivity"
+            android:theme="@style/Theme.default" />
 
         <provider
             android:name="androidx.core.content.FileProvider"

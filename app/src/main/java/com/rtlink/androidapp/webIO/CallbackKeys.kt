@@ -15,5 +15,7 @@ class CallbackKeys {
         // readLocal()
         const val READ_LOCAL: String = "readLocalCallback"
 
+        // scan()
+        const val SCAN: String = "scanCallback"
     }
 }

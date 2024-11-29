@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.util.Log
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceError
@@ -21,9 +22,11 @@ import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
 import com.rtlink.androidapp.GlobalConfig
+import com.rtlink.androidapp.GlobalConfig.Companion.RamName
 import com.rtlink.androidapp.R
-import com.rtlink.androidapp.utils.checkPermissionBeforeDo
+import com.rtlink.androidapp.utils.RequirePermission
 import com.rtlink.androidapp.utils.makeToast
+import com.rtlink.androidapp.webIO.CallbackKeys.Companion.SCAN
 import com.rtlink.androidapp.webIO.Index
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -44,6 +47,7 @@ import java.util.Locale
 class WebViewActivity : ComponentActivity() {
 
     // webView 显示的网址
+//    private val URL = "http://192.168.0.2:8088"
     private val URL = "http://192.168.1.71:8088"
 
     // webView 实例
@@ -56,9 +60,6 @@ class WebViewActivity : ComponentActivity() {
     private var fileUploadCallback: ValueCallback<Array<Uri>>? = null
 
     companion object {
-        private const val FILE_CHOOSER_REQUEST_CODE = 1
-        private const val CAMERA_PERMISSION_REQUEST_CODE = 2
-
         // 单文件选择模式码
         private const val SINGLE_FILE_CHOOSER_CODE = 0
 
@@ -214,7 +215,7 @@ class WebViewActivity : ComponentActivity() {
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         // 监听相机请求
-        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+        if (requestCode == RequirePermission.CAMERA_PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // 获得允许，启用相机
                 launchCamera()
@@ -227,12 +228,7 @@ class WebViewActivity : ComponentActivity() {
     // 准备启用相机
     // 判断一下是否已经具备了访问相机的权限
     private fun prepareCamera() {
-        checkPermissionBeforeDo(
-            this@WebViewActivity,
-            android.Manifest.permission.CAMERA,
-            CAMERA_PERMISSION_REQUEST_CODE,
-            ::launchCamera
-        )
+        RequirePermission(this@WebViewActivity, android.Manifest.permission.CAMERA, ::launchCamera)
     }
 
     // 启用相机
@@ -240,7 +236,7 @@ class WebViewActivity : ComponentActivity() {
         val captureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         currentPhotoUri = createImageFileUri()
         captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, currentPhotoUri)
-        startActivityForResult(captureIntent, FILE_CHOOSER_REQUEST_CODE)
+        startActivityForResult(captureIntent, RequirePermission.FILE_CHOOSER_REQUEST_CODE)
     }
 
     // 为即将拍下的照片创建存储Uri???
@@ -273,7 +269,7 @@ class WebViewActivity : ComponentActivity() {
         // 记录一下当前模式（是否multiple模式）
         currentFileChooserMode = modeCode
         val chooserIntent = Intent.createChooser(intent, "选择文件")
-        startActivityForResult(chooserIntent, FILE_CHOOSER_REQUEST_CODE)
+        startActivityForResult(chooserIntent, RequirePermission.FILE_CHOOSER_REQUEST_CODE)
     }
 
     @Deprecated(
@@ -287,7 +283,7 @@ class WebViewActivity : ComponentActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         // 监听得到图片后的操作
         // 文件选择结果
-        if (requestCode == FILE_CHOOSER_REQUEST_CODE) {
+        if (requestCode == RequirePermission.FILE_CHOOSER_REQUEST_CODE) {
             // 如果为空，抛出错误
             if (fileUploadCallback == null) {
                 throw RuntimeException("fileUploadCallback is null")
@@ -320,6 +316,12 @@ class WebViewActivity : ComponentActivity() {
             }
             // 重置回调函数
             fileUploadCallback = null
+        }
+
+        // 扫码事件
+        else if (requestCode == 3) {
+            val code = data?.extras?.getString("code")
+            webView?.evaluateJavascript("$RamName.callback.$SCAN('$code')", null)
         }
 
     }

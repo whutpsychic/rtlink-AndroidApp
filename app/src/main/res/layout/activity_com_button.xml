@@ -7,7 +7,7 @@
     android:orientation="vertical"
     app:circularflow_defaultRadius="10sp">
 
-    <com.rtlink.androidapp.components.TopBar
+    <com.rtlink.androidapp.ui.components.TopBar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:canPop="true"
