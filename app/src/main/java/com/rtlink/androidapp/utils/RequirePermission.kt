@@ -11,6 +11,7 @@ class RequirePermission(activity: ComponentActivity, permission: String, fn: KFu
     companion object {
         // 文件选择
         const val FILE_CHOOSER_REQUEST_CODE = 1
+
         // 相机
         const val CAMERA_PERMISSION_REQUEST_CODE = 2
     }

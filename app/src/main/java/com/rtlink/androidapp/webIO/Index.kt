@@ -3,6 +3,8 @@ package com.rtlink.androidapp.webIO
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.Uri
 import android.os.Handler
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
@@ -12,11 +14,15 @@ import com.rtlink.androidapp.activities.ScanningActivity
 import com.rtlink.androidapp.activities.WebViewActivity
 import com.rtlink.androidapp.utils.makeToast
 import com.rtlink.androidapp.webIO.CallbackKeys.Companion.MODAL_PROGRESS
+import com.rtlink.androidapp.webIO.CallbackKeys.Companion.NETWORK_TYPE
 import com.rtlink.androidapp.webIO.CallbackKeys.Companion.READ_LOCAL
 
 class Index(private val activity: ComponentActivity, private val webView: WebView?) {
 
+    // 正在加载
     private var modalLoading: ProgressDialog? = null
+
+    // 进度条
     private var modalProgress: ModalProgress? = null
 
     /** Show a toast from the web page  */
@@ -92,8 +98,7 @@ class Index(private val activity: ComponentActivity, private val webView: WebVie
     @JavascriptInterface
     fun readLocal(key: String) {
         val sharedPref = activity.getPreferences(Context.MODE_PRIVATE) ?: return
-        val defaultValue: String = ""
-        val content = sharedPref.getString(key, defaultValue)
+        val content = sharedPref.getString(key, "")
 
         activity.runOnUiThread {
             webView?.evaluateJavascript("$RamName.callback.$READ_LOCAL('$content')", null)
@@ -102,7 +107,9 @@ class Index(private val activity: ComponentActivity, private val webView: WebVie
 
     /** Dial numbers to prepare a phone call  */
     @JavascriptInterface
-    fun phoneCall() {
+    fun preDial(number: String) {
+        val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$number"))
+        activity.startActivity(intent)
     }
 
     /** Scan qrcode or barcode */
@@ -115,6 +122,13 @@ class Index(private val activity: ComponentActivity, private val webView: WebVie
     /** Check for network type  */
     @JavascriptInterface
     fun checkNetworkType() {
+        val cm =
+            activity.baseContext.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val res = cm.getActiveNetworkInfo()?.typeName
+
+        activity.runOnUiThread {
+            webView?.evaluateJavascript("$RamName.callback.$NETWORK_TYPE('$res')", null)
+        }
     }
 
     /** Get Safe Height  */
