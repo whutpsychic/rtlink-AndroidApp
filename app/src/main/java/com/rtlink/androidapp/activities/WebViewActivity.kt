@@ -1,6 +1,7 @@
 package com.rtlink.androidapp.activities
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.ContentResolver
 import android.content.ContentValues
@@ -12,7 +13,6 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Log
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceError
@@ -21,6 +21,8 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import com.rtlink.androidapp.GlobalConfig
 import com.rtlink.androidapp.GlobalConfig.Companion.RamName
 import com.rtlink.androidapp.R
@@ -65,6 +67,9 @@ class WebViewActivity : ComponentActivity() {
 
         // 多文件选择模式码
         private const val MULTI_FILE_CHOOSER_CODE = 1
+
+        // 扫码启动器
+        lateinit var scanResultLauncher: ActivityResultLauncher<Intent>
     }
 
     // 文件上传模式（默认单选）
@@ -73,6 +78,7 @@ class WebViewActivity : ComponentActivity() {
 
     // 选择的上传文件（单选或相机拍摄）
     private lateinit var currentPhotoUri: Uri
+
 
     // 劫持 webView 后退事件（未完成）
     @Deprecated("Deprecated in Java")
@@ -199,6 +205,17 @@ class WebViewActivity : ComponentActivity() {
 //        webView?.loadUrl("file:///android_asset/index.html");
         // 给webJS端安装功能函数
         installJsFns(webView)
+
+        // 注册前往扫码结果监听器
+        scanResultLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    // There are no request codes
+                    val data: Intent? = result.data
+                    val code = data?.extras?.getString("code")
+                    webView?.evaluateJavascript("$RamName.callback.$SCAN('$code')", null)
+                }
+            }
     }
 
     // 给webJS端安装功能
@@ -316,12 +333,6 @@ class WebViewActivity : ComponentActivity() {
             }
             // 重置回调函数
             fileUploadCallback = null
-        }
-
-        // 扫码事件
-        else if (requestCode == 3) {
-            val code = data?.extras?.getString("code")
-            webView?.evaluateJavascript("$RamName.callback.$SCAN('$code')", null)
         }
 
     }

@@ -1,26 +1,18 @@
 package com.rtlink.androidapp.webIO
 
-import android.app.Activity
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Handler
-import android.util.Log
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
 import androidx.activity.ComponentActivity
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.core.content.ContextCompat.startActivity
-import com.google.mlkit.vision.barcode.BarcodeScannerOptions
-import com.google.mlkit.vision.barcode.ZoomSuggestionOptions
-import com.google.mlkit.vision.barcode.common.Barcode
 import com.rtlink.androidapp.GlobalConfig.Companion.RamName
 import com.rtlink.androidapp.activities.ScanningActivity
 import com.rtlink.androidapp.activities.WebViewActivity
 import com.rtlink.androidapp.utils.makeToast
 import com.rtlink.androidapp.webIO.CallbackKeys.Companion.MODAL_PROGRESS
 import com.rtlink.androidapp.webIO.CallbackKeys.Companion.READ_LOCAL
-import com.rtlink.androidapp.webIO.CallbackKeys.Companion.SCAN
 
 class Index(private val activity: ComponentActivity, private val webView: WebView?) {
 
@@ -117,24 +109,7 @@ class Index(private val activity: ComponentActivity, private val webView: WebVie
     @JavascriptInterface
     fun scan() {
         val intent = Intent(activity, ScanningActivity::class.java)
-        activity.startActivityForResult(intent, 3)
-
-//        activity.runOnUiThread {
-//            webView?.evaluateJavascript("$RamName.callback.$SCAN('$str')", null)
-//        }
-
-//        val resultLauncher =
-//            activity.registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-//                if (result.resultCode == Activity.RESULT_OK) {
-//                    // There are no request codes
-//                    val data: Intent? = result.data
-//                    activity.runOnUiThread {
-//                        webView?.evaluateJavascript("$RamName.callback.$SCAN('$data')", null)
-//                    }
-//                }
-//            }
-//
-//        resultLauncher.launch(intent)
+        WebViewActivity.scanResultLauncher.launch(intent)
     }
 
     /** Check for network type  */

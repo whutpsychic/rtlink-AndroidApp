@@ -6,12 +6,10 @@ import androidx.activity.ComponentActivity
 import com.rtlink.androidapp.R
 
 import android.Manifest
-import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.util.Log
-import android.widget.TextView
 import androidx.annotation.OptIn
-import androidx.camera.core.CameraProvider
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
@@ -142,14 +140,13 @@ class ScanningActivity : ComponentActivity() {
                 .addOnSuccessListener { barcodeList ->
                     val barcode = barcodeList.getOrNull(0)
 
-
                     // `rawValue` is the decoded value of the barcode
                     barcode?.rawValue?.let { value ->
                         // 得到扫码数据后暂停/关闭相机，并带着结果返回
                         cameraProvider.unbindAll()
 
                         val intent = Intent().putExtra("code", value)
-                        setResult(3, intent)
+                        setResult(Activity.RESULT_OK, intent)
                         finish()
                     }
                 }
