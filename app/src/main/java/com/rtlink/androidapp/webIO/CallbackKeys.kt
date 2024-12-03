@@ -13,8 +13,8 @@ class CallbackKeys {
         // modalConfirm()
         const val MODAL_CONFIRM: String = "modalConfirm$COMMON_KEY"
 
-        // modalProgress()
-        const val MODAL_PROGRESS: String = "modalProgress$COMMON_KEY"
+        // modalLoading()
+        const val MODAL_LOADING: String = "modalLoading$COMMON_KEY"
 
         // readLocal()
         const val READ_LOCAL: String = "readLocal$COMMON_KEY"

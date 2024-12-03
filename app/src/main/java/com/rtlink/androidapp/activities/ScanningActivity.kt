@@ -9,6 +9,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.util.Log
+import androidx.activity.enableEdgeToEdge
 import androidx.annotation.OptIn
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ExperimentalGetImage
@@ -33,9 +34,10 @@ class ScanningActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // 沉浸式渲染
+        enableEdgeToEdge()
         // 显示注册的页面
         setContentView(R.layout.activity_scanning)
-
         // 相机权限确认和后续操作
         RequirePermission(this@ScanningActivity, Manifest.permission.CAMERA, ::bindCameraUseCases)
     }
@@ -65,7 +67,6 @@ class ScanningActivity : ComponentActivity() {
         val cameraProviderFuture = ProcessCameraProvider.getInstance(this)
 
         cameraProviderFuture.addListener({
-//            val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
             cameraProvider = cameraProviderFuture.get()
 
             // setting up the preview use case

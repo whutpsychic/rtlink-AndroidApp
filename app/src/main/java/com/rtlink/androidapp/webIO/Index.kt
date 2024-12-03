@@ -13,7 +13,7 @@ import com.rtlink.androidapp.GlobalConfig.Companion.RamName
 import com.rtlink.androidapp.activities.ScanningActivity
 import com.rtlink.androidapp.activities.WebViewActivity
 import com.rtlink.androidapp.utils.makeToast
-import com.rtlink.androidapp.webIO.CallbackKeys.Companion.MODAL_PROGRESS
+import com.rtlink.androidapp.webIO.CallbackKeys.Companion.MODAL_LOADING
 import com.rtlink.androidapp.webIO.CallbackKeys.Companion.NETWORK_TYPE
 import com.rtlink.androidapp.webIO.CallbackKeys.Companion.READ_LOCAL
 
@@ -53,6 +53,9 @@ class Index(private val activity: ComponentActivity, private val webView: WebVie
     @JavascriptInterface
     fun finish() {
         modalLoading?.dismiss()
+        activity.runOnUiThread {
+            webView?.evaluateJavascript("$RamName.callback.$MODAL_LOADING()", null)
+        }
     }
 
     /** Show a modalProgress from the web page  */
@@ -71,9 +74,6 @@ class Index(private val activity: ComponentActivity, private val webView: WebVie
             // 0.5s后触发动作
             Handler().postDelayed(Runnable {
                 modalProgress?.dialog?.dismiss()
-                activity.runOnUiThread {
-                    webView?.evaluateJavascript("$RamName.callback.$MODAL_PROGRESS()", null)
-                }
             }, 500)
         }
     }
