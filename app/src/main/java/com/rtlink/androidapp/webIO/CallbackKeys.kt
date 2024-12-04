@@ -2,7 +2,6 @@ package com.rtlink.androidapp.webIO
 
 class CallbackKeys {
 
-
     companion object {
 
         private const val COMMON_KEY: String = "Callback"
@@ -27,5 +26,8 @@ class CallbackKeys {
 
         // takePhoto
         const val TAKE_PHOTO: String = "takePhoto$COMMON_KEY"
+
+        // getSafeTop
+        const val GET_SAFE_TOP: String = "getSafeTop$COMMON_KEY"
     }
 }

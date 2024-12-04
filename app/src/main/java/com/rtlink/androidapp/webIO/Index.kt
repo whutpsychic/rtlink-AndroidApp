@@ -6,12 +6,16 @@ import android.content.Intent
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Handler
+import android.os.VibrationEffect
+import android.os.Vibrator
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
+import androidx.compose.foundation.layout.WindowInsets
 import com.rtlink.androidapp.GlobalConfig.Companion.RAM_NAME
 import com.rtlink.androidapp.activities.ScanningActivity
 import com.rtlink.androidapp.activities.WebViewActivity
 import com.rtlink.androidapp.utils.makeToast
+import com.rtlink.androidapp.webIO.CallbackKeys.Companion.GET_SAFE_TOP
 import com.rtlink.androidapp.webIO.CallbackKeys.Companion.MODAL_LOADING
 import com.rtlink.androidapp.webIO.CallbackKeys.Companion.NETWORK_TYPE
 import com.rtlink.androidapp.webIO.CallbackKeys.Companion.READ_LOCAL
@@ -132,24 +136,34 @@ class Index(private val activity: WebViewActivity, private val webView: WebView?
 
     /** Get Safe Height  */
     @JavascriptInterface
-    fun getSafeHeight() {
+    fun getSafeTop() {
+        val windowInsets = activity.window.decorView.rootWindowInsets
+        val top: Int = windowInsets.getInsets(1).top / 2
+        activity.runOnUiThread {
+            webView?.evaluateJavascript("$RAM_NAME.callback.$GET_SAFE_TOP($top)", null)
+        }
     }
 
     /** Go to take a photo  */
     @JavascriptInterface
     fun takePhoto() {
-         activity.prepareTakePhoto()
+        activity.prepareTakePhoto()
     }
 
     /** Vibrate Action  */
     @JavascriptInterface
     fun vibrate() {
+        val vibe: Vibrator = activity.getSystemService("vibrator") as Vibrator
+        vibe.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_HEAVY_CLICK))
     }
 
     /** Display a notification on top  */
     @JavascriptInterface
     fun notification() {
     }
+
+    // 强制横屏/恢复横屏
+    // 恢复竖屏/恢复竖屏
 
 
 }
