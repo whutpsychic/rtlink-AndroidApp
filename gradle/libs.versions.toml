@@ -16,6 +16,7 @@ barcodeScanningCommon = "17.0.0"
 webkitVersion = "1.9.0"
 cameraView = "1.4.0"
 cameraLifecycle = "1.4.0"
+playServicesCastFramework = "22.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -40,6 +41,7 @@ barcode-scanning-common = { group = "com.google.mlkit", name = "barcode-scanning
 webkit = { module = "androidx.webkit:webkit", version.ref = "webkitVersion" }
 androidx-camera-view = { group = "androidx.camera", name = "camera-view", version.ref = "cameraView" }
 androidx-camera-lifecycle = { group = "androidx.camera", name = "camera-lifecycle", version.ref = "cameraLifecycle" }
+play-services-cast-framework = { group = "com.google.android.gms", name = "play-services-cast-framework", version.ref = "playServicesCastFramework" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -8,6 +8,7 @@ import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -24,15 +25,21 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.rtlink.androidapp.GlobalConfig
-import com.rtlink.androidapp.GlobalConfig.Companion.RamName
+import com.rtlink.androidapp.GlobalConfig.Companion.RAM_NAME
+import com.rtlink.androidapp.GlobalConfig.Companion.WEB_URL
 import com.rtlink.androidapp.R
 import com.rtlink.androidapp.utils.RequirePermission
 import com.rtlink.androidapp.utils.makeToast
 import com.rtlink.androidapp.webIO.CallbackKeys.Companion.SCAN
+import com.rtlink.androidapp.webIO.CallbackKeys.Companion.TAKE_PHOTO
 import com.rtlink.androidapp.webIO.Index
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 
 // *********************** 关于<input type="file" /> ***********************
 // - 仅抬起相机ok
@@ -42,15 +49,32 @@ import java.util.Locale
 // - 解决在多选文件模式下拍照后无法正常传输的问题ok
 // - 所有类型的文件可上传ok
 // - 解决打开文件选择器但不做选择退出后闪退的问题ok
+// - 解决打开文件选择器/抬起相机但不做操作，退出后不能再次选择文件或拍照的问题ok
 // ************************************************************************
 // ************************** 加载本地html(离线运行) *************************
 // - createWebHashHistory + base: './'
 // ************************************************************************
 class WebViewActivity : ComponentActivity() {
 
-    // webView 显示的网址
-//    private val URL = "http://192.168.0.2:8088"
-    private val URL = "http://192.168.1.71:8088"
+    // 扫码启动器
+    lateinit var scanResultLauncher: ActivityResultLauncher<Intent>
+
+    // 选择文件启动器
+    private lateinit var fileChooseLauncher: ActivityResultLauncher<Intent>
+
+    // 拍照启动器(选择文件用)
+    private lateinit var cameraLauncher: ActivityResultLauncher<Intent>
+
+    // 拍照启动器(选择文件用)
+    private lateinit var photoLauncher: ActivityResultLauncher<Intent>
+
+    companion object {
+        // 单文件选择模式码
+        private const val SINGLE_FILE_CHOOSER_CODE = 0
+
+        // 多文件选择模式码
+        private const val MULTI_FILE_CHOOSER_CODE = 1
+    }
 
     // webView 实例
     private var webView: WebView? = null
@@ -61,17 +85,6 @@ class WebViewActivity : ComponentActivity() {
     // 临时存放文件选取回调函数
     private var fileUploadCallback: ValueCallback<Array<Uri>>? = null
 
-    companion object {
-        // 单文件选择模式码
-        private const val SINGLE_FILE_CHOOSER_CODE = 0
-
-        // 多文件选择模式码
-        private const val MULTI_FILE_CHOOSER_CODE = 1
-
-        // 扫码启动器
-        lateinit var scanResultLauncher: ActivityResultLauncher<Intent>
-    }
-
     // 文件上传模式（默认单选）
     // 0 = 单选 1 = 多选
     private var currentFileChooserMode: Int = SINGLE_FILE_CHOOSER_CODE
@@ -80,15 +93,7 @@ class WebViewActivity : ComponentActivity() {
     private lateinit var currentPhotoUri: Uri
 
 
-    // 劫持 webView 后退事件（未完成）
-    @Deprecated("Deprecated in Java")
-    override fun onBackPressed() {
-        println(" =========================================================== ")
-        if (webView != null) {
-            if (webView!!.canGoBack()) webView!!.goBack() else super.onBackPressed()
-        }
-    }
-
+    @OptIn(ExperimentalEncodingApi::class)
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,14 +101,14 @@ class WebViewActivity : ComponentActivity() {
         enableEdgeToEdge()
         // 显示注册的页面
         setContentView(R.layout.activity_webview)
-
+        // 绑定webView实例
         webView = findViewById<WebView>(R.id.webView)
         // 注意要启用JS，默认是不启用的，否则将导致某些页面无法显示
         webView?.settings?.javaScriptEnabled = true
 
         // ******** 允许访问本地文件系统（加载本地.html/.css/.js等文件） ********
-        webView?.settings?.allowFileAccess = true;
-        webView?.settings?.allowFileAccessFromFileURLs = true;
+        webView?.settings?.allowFileAccess = true
+        webView?.settings?.allowFileAccessFromFileURLs = true
         // **************************************************************
 
         // 启用此行代码可显示原生web端的一些功能比如：显示alert()
@@ -117,7 +122,6 @@ class WebViewActivity : ComponentActivity() {
             ): Boolean {
                 // 备份回调函数
                 fileUploadCallback = filePathCallback
-
                 // 如果是选择图片
                 if (fileChooserParams?.acceptTypes?.contains("image/*") == true) {
                     // 如果是仅使用相机
@@ -155,7 +159,6 @@ class WebViewActivity : ComponentActivity() {
                     // 则直接打开文件选择器
                     prepareFileChooser(fileChooserParams.mode, "*/*")
                 }
-
                 return true
             }
 
@@ -200,30 +203,103 @@ class WebViewActivity : ComponentActivity() {
         webView?.clearCache(true)
 
         // 加载指定地址
-        webView?.loadUrl(URL)
+        webView?.loadUrl(WEB_URL)
         // 加载本地html
-//        webView?.loadUrl("file:///android_asset/index.html");
+//        webView?.loadUrl("file:///android_asset/index.html")
         // 给webJS端安装功能函数
-        installJsFns(webView)
+        webView?.addJavascriptInterface(Index(this@WebViewActivity, webView), GlobalConfig.IO_NAME)
 
-        // 注册前往扫码结果监听器
+        // 注册扫码结果启动器
         scanResultLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 if (result.resultCode == Activity.RESULT_OK) {
                     // There are no request codes
                     val data: Intent? = result.data
                     val code = data?.extras?.getString("code")
-                    webView?.evaluateJavascript("$RamName.callback.$SCAN('$code')", null)
+                    webView?.evaluateJavascript("$RAM_NAME.callback.$SCAN('$code')", null)
+                }
+            }
+
+        // 注册拍照结果启动器(文件选择用)
+        // 如果是文件选择触发的拍照动作默认就是单选文件
+        cameraLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    val results: Array<Uri> = when {
+                        result.data?.data != null -> arrayOf(result.data!!.data!!)
+                        else -> arrayOf(currentPhotoUri)
+                    }
+                    // web端获取结果
+                    fileUploadCallback?.onReceiveValue(results)
+                } else {
+                    // 必须调用回调函数并予以空值
+                    fileUploadCallback?.onReceiveValue(arrayOf(currentPhotoUri))
+                }
+            }
+
+        // 注册选择文件启动器
+        fileChooseLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    // 如果web文件选择回调函数为空，抛出错误 "fileUploadCallback is null"
+                    if (fileUploadCallback == null) {
+                        webView?.evaluateJavascript("alert('fileUploadCallback is null')", null)
+                    }
+
+                    // 单选文件
+                    if (currentFileChooserMode == SINGLE_FILE_CHOOSER_CODE) {
+                        val results: Array<Uri> = when {
+                            result.data?.data != null -> arrayOf(result.data!!.data!!)
+                            else -> arrayOf(currentPhotoUri)
+                        }
+                        // web端获取结果
+                        fileUploadCallback?.onReceiveValue(results)
+                    }
+                    // 多选文件
+                    else {
+                        // 快捷操作补丁（单选一个文件）
+                        if (result.data?.data != null) {
+                            fileUploadCallback?.onReceiveValue(arrayOf(result.data!!.data!!))
+                        } else if (result.data?.clipData != null) {
+                            var uriArr = arrayOf<Uri>()
+                            for (i in 0 until result.data!!.clipData!!.itemCount) {
+                                val uri = result.data!!.clipData!!.getItemAt(i).uri
+                                uriArr = uriArr.plus(uri)
+                            }
+                            fileUploadCallback?.onReceiveValue(uriArr)
+                        }
+                    }
+                } else {
+                    // 必须调用回调函数并予以空值
+                    fileUploadCallback?.onReceiveValue(arrayOf(currentPhotoUri))
+                }
+            }
+
+        // 相机拍照启动器(结果以base64字符串形式返回)
+        photoLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    // 将拍照所得变为base64字符串
+                    val targetImageUri: Uri = currentPhotoUri
+
+                    val imageStream: InputStream? = contentResolver.openInputStream(targetImageUri)
+                    val bmp: Bitmap = BitmapFactory.decodeStream(imageStream)
+
+                    val byteArrOutputStream = ByteArrayOutputStream()
+                    bmp.compress(Bitmap.CompressFormat.JPEG, 100, byteArrOutputStream)
+                    val byteArr = byteArrOutputStream.toByteArray()
+                    val encImage: String = Base64.encode(byteArr, 0)
+
+                    webView?.evaluateJavascript(
+                        "$RAM_NAME.callback.$TAKE_PHOTO('data:image/jpg;base64,$encImage')",
+                        null
+                    )
                 }
             }
     }
 
-    // 给webJS端安装功能
-    private fun installJsFns(w: WebView?) {
-        w?.addJavascriptInterface(Index(this@WebViewActivity, w), GlobalConfig.IOName)
-    }
-
     // 监测请求权限后的回调函数
+    // 由 web 触发
     @Deprecated("Deprecated in Java")
     override fun onRequestPermissionsResult(
         requestCode: Int,
@@ -242,6 +318,21 @@ class WebViewActivity : ComponentActivity() {
         }
     }
 
+    fun prepareTakePhoto() {
+        RequirePermission(
+            this@WebViewActivity,
+            android.Manifest.permission.CAMERA,
+            ::launchCameraToTakePhoto
+        )
+    }
+
+    private fun launchCameraToTakePhoto() {
+        val captureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        currentPhotoUri = createImageFileUri()
+        captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, currentPhotoUri)
+        photoLauncher.launch(captureIntent)
+    }
+
     // 准备启用相机
     // 判断一下是否已经具备了访问相机的权限
     private fun prepareCamera() {
@@ -253,7 +344,7 @@ class WebViewActivity : ComponentActivity() {
         val captureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         currentPhotoUri = createImageFileUri()
         captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, currentPhotoUri)
-        startActivityForResult(captureIntent, RequirePermission.FILE_CHOOSER_REQUEST_CODE)
+        cameraLauncher.launch(captureIntent)
     }
 
     // 为即将拍下的照片创建存储Uri???
@@ -286,55 +377,16 @@ class WebViewActivity : ComponentActivity() {
         // 记录一下当前模式（是否multiple模式）
         currentFileChooserMode = modeCode
         val chooserIntent = Intent.createChooser(intent, "选择文件")
-        startActivityForResult(chooserIntent, RequirePermission.FILE_CHOOSER_REQUEST_CODE)
+        fileChooseLauncher.launch(chooserIntent)
     }
 
-    @Deprecated(
-        "Deprecated in Java", ReplaceWith(
-            "super.onActivityResult(requestCode, resultCode, data)",
-            "androidx.activity.ComponentActivity"
-        )
-    )
-    // 监听Activity运行结果
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        // 监听得到图片后的操作
-        // 文件选择结果
-        if (requestCode == RequirePermission.FILE_CHOOSER_REQUEST_CODE) {
-            // 如果为空，抛出错误
-            if (fileUploadCallback == null) {
-                throw RuntimeException("fileUploadCallback is null")
-            }
-
-            // 拍照或单选文件
-            if (currentFileChooserMode == SINGLE_FILE_CHOOSER_CODE) {
-                val results: Array<Uri>? = when {
-                    resultCode == RESULT_OK && data?.data != null -> arrayOf(data.data!!)
-                    resultCode == RESULT_OK -> arrayOf(currentPhotoUri)
-                    else -> null
-                }
-                // web端获取结果
-                fileUploadCallback?.onReceiveValue(results)
-            }
-
-            // 多选文件
-            else {
-                // 快捷操作补丁（单选一个文件）
-                if (data?.data != null) {
-                    fileUploadCallback?.onReceiveValue(arrayOf(data.data!!))
-                } else if (data?.clipData != null) {
-                    var uriArr = arrayOf<Uri>()
-                    for (i in 0 until data.clipData!!.itemCount) {
-                        val uri = data.clipData!!.getItemAt(i).uri
-                        uriArr = uriArr.plus(uri)
-                    }
-                    fileUploadCallback?.onReceiveValue(uriArr)
-                }
-            }
-            // 重置回调函数
-            fileUploadCallback = null
+    // 劫持 webView 后退事件（未完成）
+    @Deprecated("Deprecated in Java")
+    override fun onBackPressed() {
+        println(" =========================================================== ")
+        if (webView != null) {
+            if (webView!!.canGoBack()) webView!!.goBack() else super.onBackPressed()
         }
-
     }
 
 }

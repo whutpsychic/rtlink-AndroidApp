@@ -8,8 +8,7 @@ import android.net.Uri
 import android.os.Handler
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
-import androidx.activity.ComponentActivity
-import com.rtlink.androidapp.GlobalConfig.Companion.RamName
+import com.rtlink.androidapp.GlobalConfig.Companion.RAM_NAME
 import com.rtlink.androidapp.activities.ScanningActivity
 import com.rtlink.androidapp.activities.WebViewActivity
 import com.rtlink.androidapp.utils.makeToast
@@ -17,7 +16,7 @@ import com.rtlink.androidapp.webIO.CallbackKeys.Companion.MODAL_LOADING
 import com.rtlink.androidapp.webIO.CallbackKeys.Companion.NETWORK_TYPE
 import com.rtlink.androidapp.webIO.CallbackKeys.Companion.READ_LOCAL
 
-class Index(private val activity: ComponentActivity, private val webView: WebView?) {
+class Index(private val activity: WebViewActivity, private val webView: WebView?) {
 
     // 正在加载
     private var modalLoading: ProgressDialog? = null
@@ -54,7 +53,7 @@ class Index(private val activity: ComponentActivity, private val webView: WebVie
     fun finish() {
         modalLoading?.dismiss()
         activity.runOnUiThread {
-            webView?.evaluateJavascript("$RamName.callback.$MODAL_LOADING()", null)
+            webView?.evaluateJavascript("$RAM_NAME.callback.$MODAL_LOADING()", null)
         }
     }
 
@@ -101,7 +100,7 @@ class Index(private val activity: ComponentActivity, private val webView: WebVie
         val content = sharedPref.getString(key, "")
 
         activity.runOnUiThread {
-            webView?.evaluateJavascript("$RamName.callback.$READ_LOCAL('$content')", null)
+            webView?.evaluateJavascript("$RAM_NAME.callback.$READ_LOCAL('$content')", null)
         }
     }
 
@@ -116,7 +115,7 @@ class Index(private val activity: ComponentActivity, private val webView: WebVie
     @JavascriptInterface
     fun scan() {
         val intent = Intent(activity, ScanningActivity::class.java)
-        WebViewActivity.scanResultLauncher.launch(intent)
+        activity.scanResultLauncher.launch(intent)
     }
 
     /** Check for network type  */
@@ -127,7 +126,7 @@ class Index(private val activity: ComponentActivity, private val webView: WebVie
         val res = cm.getActiveNetworkInfo()?.typeName
 
         activity.runOnUiThread {
-            webView?.evaluateJavascript("$RamName.callback.$NETWORK_TYPE('$res')", null)
+            webView?.evaluateJavascript("$RAM_NAME.callback.$NETWORK_TYPE('$res')", null)
         }
     }
 
@@ -139,6 +138,7 @@ class Index(private val activity: ComponentActivity, private val webView: WebVie
     /** Go to take a photo  */
     @JavascriptInterface
     fun takePhoto() {
+         activity.prepareTakePhoto()
     }
 
     /** Vibrate Action  */
@@ -150,4 +150,6 @@ class Index(private val activity: ComponentActivity, private val webView: WebVie
     @JavascriptInterface
     fun notification() {
     }
+
+
 }

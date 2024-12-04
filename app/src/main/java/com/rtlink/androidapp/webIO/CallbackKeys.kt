@@ -24,5 +24,8 @@ class CallbackKeys {
 
         // networkType
         const val NETWORK_TYPE: String = "checkNetworkType$COMMON_KEY"
+
+        // takePhoto
+        const val TAKE_PHOTO: String = "takePhoto$COMMON_KEY"
     }
 }
