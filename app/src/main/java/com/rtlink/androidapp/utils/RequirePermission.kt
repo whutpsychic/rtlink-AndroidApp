@@ -8,15 +8,17 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import kotlin.reflect.KFunction0
 
-class RequirePermission(activity: ComponentActivity, permission: String, fn: KFunction0<Unit>) {
+class RequirePermission {
 
-    companion object {
-        // 相机
-        const val CAMERA_PERMISSION_REQUEST_CODE = 2
+    constructor(activity: ComponentActivity, permission: String) {
+        ActivityCompat.requestPermissions(
+            activity,
+            arrayOf(permission),
+            getCodeByPermissionType(permission)
+        )
     }
 
-    // 初始化时执行
-    init {
+    constructor(activity: ComponentActivity, permission: String, fn: KFunction0<Unit>) {
         // 如果有该权限则执行后续函数
         if (
             ContextCompat.checkSelfPermission(
@@ -36,11 +38,20 @@ class RequirePermission(activity: ComponentActivity, permission: String, fn: KFu
         }
     }
 
+
+    companion object {
+        // 相机
+        const val CAMERA_PERMISSION_REQUEST_CODE = 2
+
+        // 通知
+        const val NOTIFICATION_PERMISSION_REQUEST_CODE = 3
+    }
+
     private fun getCodeByPermissionType(permission: String): Int {
         return when (permission) {
             android.Manifest.permission.CAMERA -> CAMERA_PERMISSION_REQUEST_CODE
+            android.Manifest.permission.POST_NOTIFICATIONS -> NOTIFICATION_PERMISSION_REQUEST_CODE
             else -> 0
         }
     }
-
 }

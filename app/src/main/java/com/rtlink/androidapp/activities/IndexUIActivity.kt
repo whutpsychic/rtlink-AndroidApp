@@ -34,5 +34,11 @@ class IndexUIActivity : ComponentActivity() {
             startActivity(targetPage)
         }
 
+        val webViewIpConfigPage = this.findViewById<Button>(R.id.webview_ipconfig)
+        webViewIpConfigPage.setOnClickListener {
+            val targetPage = Intent(this, WebViewIPConfigActivity::class.java)
+            startActivity(targetPage)
+        }
+
     }
 }

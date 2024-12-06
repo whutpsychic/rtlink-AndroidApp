@@ -1,11 +1,16 @@
 package com.rtlink.androidapp.activities
 
+import android.Manifest.permission
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.ContentResolver
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -28,6 +33,7 @@ import com.rtlink.androidapp.GlobalConfig
 import com.rtlink.androidapp.GlobalConfig.Companion.RAM_NAME
 import com.rtlink.androidapp.GlobalConfig.Companion.WEB_URL
 import com.rtlink.androidapp.R
+import com.rtlink.androidapp.utils.LocalStorage
 import com.rtlink.androidapp.utils.RequirePermission
 import com.rtlink.androidapp.utils.makeToast
 import com.rtlink.androidapp.webIO.CallbackKeys.Companion.SCAN
@@ -56,6 +62,21 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 // ************************************************************************
 class WebViewActivity : ComponentActivity() {
 
+    companion object {
+        // 单文件选择模式码
+        const val SINGLE_FILE_CHOOSER_CODE = 0
+
+        // 多文件选择模式码
+        const val MULTI_FILE_CHOOSER_CODE = 1
+
+        // 通知 ChannelId
+        const val CHANNEL_ID = "rtlink_nc"
+        const val CHANNEL_NAME = "rtlink_notification_channel"
+    }
+
+    // ipconfig启动器
+    lateinit var ipConfigLauncher: ActivityResultLauncher<Intent>
+
     // 扫码启动器
     lateinit var scanResultLauncher: ActivityResultLauncher<Intent>
 
@@ -67,14 +88,6 @@ class WebViewActivity : ComponentActivity() {
 
     // 拍照启动器(选择文件用)
     private lateinit var photoLauncher: ActivityResultLauncher<Intent>
-
-    companion object {
-        // 单文件选择模式码
-        private const val SINGLE_FILE_CHOOSER_CODE = 0
-
-        // 多文件选择模式码
-        private const val MULTI_FILE_CHOOSER_CODE = 1
-    }
 
     // webView 实例
     private var webView: WebView? = null
@@ -92,15 +105,18 @@ class WebViewActivity : ComponentActivity() {
     // 选择的上传文件（单选或相机拍摄）
     private lateinit var currentPhotoUri: Uri
 
-
     @OptIn(ExperimentalEncodingApi::class)
-    @SuppressLint("SetJavaScriptEnabled")
+    @SuppressLint("SetJavaScriptEnabled", "InlinedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // 沉浸式渲染
         enableEdgeToEdge()
         // 显示注册的页面
         setContentView(R.layout.activity_webview)
+
+        // 向客户索要通知权限
+        RequirePermission(this, permission.POST_NOTIFICATIONS, ::createNotificationChannel)
+
         // 绑定webView实例
         webView = findViewById<WebView>(R.id.webView)
         // 注意要启用JS，默认是不启用的，否则将导致某些页面无法显示
@@ -203,7 +219,7 @@ class WebViewActivity : ComponentActivity() {
         webView?.clearCache(true)
 
         // 加载指定地址
-        webView?.loadUrl(WEB_URL)
+        webView?.loadUrl(getCurrWebUrl())
         // 加载本地html
 //        webView?.loadUrl("file:///android_asset/index.html")
         // 给webJS端安装功能函数
@@ -296,6 +312,20 @@ class WebViewActivity : ComponentActivity() {
                     )
                 }
             }
+
+        // 前往ipconfig启动器
+        ipConfigLauncher =
+            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+                if (result.resultCode == Activity.RESULT_OK) {
+                    val data: Intent? = result.data
+                    val url = data?.extras?.getString("url")
+                    if (url != null) {
+                        val localStorage = LocalStorage(this@WebViewActivity)
+                        localStorage.write("weburl", url)
+                        webView?.loadUrl(url)
+                    }
+                }
+            }
     }
 
     // 监测请求权限后的回调函数
@@ -324,6 +354,28 @@ class WebViewActivity : ComponentActivity() {
             android.Manifest.permission.CAMERA,
             ::launchCameraToTakePhoto
         )
+    }
+
+    private fun getCurrWebUrl(): String {
+        val localStorage = LocalStorage(this@WebViewActivity)
+        val currUrl: String = localStorage.read("weburl") ?: WEB_URL
+        return currUrl
+    }
+
+    private fun createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is not in the Support Library.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val descriptionText = "Rtlink notification channel."
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, importance).apply {
+                description = descriptionText
+            }
+            // Register the channel with the system.
+            val notificationManager: NotificationManager =
+                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
     }
 
     private fun launchCameraToTakePhoto() {

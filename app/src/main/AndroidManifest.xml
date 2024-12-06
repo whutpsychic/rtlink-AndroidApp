@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -50,6 +51,12 @@
         <!-- webView 活动-->
         <activity
             android:name=".activities.WebViewActivity"
+            android:screenOrientation="landscape"
+            android:theme="@style/Theme.default" />
+        <!-- webView IpConfig 活动-->
+        <activity
+            android:name=".activities.WebViewIPConfigActivity"
+            android:screenOrientation="landscape"
             android:theme="@style/Theme.default" />
         <!-- 扫码活动-->
         <activity

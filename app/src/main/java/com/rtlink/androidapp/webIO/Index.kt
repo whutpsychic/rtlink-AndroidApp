@@ -1,8 +1,12 @@
 package com.rtlink.androidapp.webIO
 
+import android.Manifest.*
+import android.app.PendingIntent
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Handler
@@ -10,10 +14,16 @@ import android.os.VibrationEffect
 import android.os.Vibrator
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.rtlink.androidapp.GlobalConfig.Companion.RAM_NAME
+import com.rtlink.androidapp.R
 import com.rtlink.androidapp.activities.ScanningActivity
 import com.rtlink.androidapp.activities.WebViewActivity
+import com.rtlink.androidapp.activities.WebViewActivity.Companion.CHANNEL_ID
+import com.rtlink.androidapp.activities.WebViewIPConfigActivity
+import com.rtlink.androidapp.utils.LocalStorage
 import com.rtlink.androidapp.utils.makeToast
 import com.rtlink.androidapp.webIO.CallbackKeys.Companion.GET_SAFE_TOP
 import com.rtlink.androidapp.webIO.CallbackKeys.Companion.MODAL_LOADING
@@ -84,25 +94,23 @@ class Index(private val activity: WebViewActivity, private val webView: WebView?
     /** Jump to native page for configuring web ip  */
     @JavascriptInterface
     fun ipConfig() {
+        val intent = Intent(activity, WebViewIPConfigActivity::class.java)
+        activity.ipConfigLauncher.launch(intent)
     }
     /**  ----------------------------------------------------------------------------- */
     /** Write local storage from web  */
     /** Work with SharedPreferences  */
     @JavascriptInterface
     fun writeLocal(key: String, value: String) {
-        val sharedPref = activity.getPreferences(Context.MODE_PRIVATE) ?: return
-        with(sharedPref.edit()) {
-            putString(key, value)
-            apply()
-        }
+        val localStorage = LocalStorage(activity)
+        localStorage.write(key, value)
     }
 
     /** Read local storage from web  */
     @JavascriptInterface
     fun readLocal(key: String) {
-        val sharedPref = activity.getPreferences(Context.MODE_PRIVATE) ?: return
-        val content = sharedPref.getString(key, "")
-
+        val localStorage = LocalStorage(activity)
+        val content = localStorage.read(key)
         activity.runOnUiThread {
             webView?.evaluateJavascript("$RAM_NAME.callback.$READ_LOCAL('$content')", null)
         }
@@ -157,13 +165,66 @@ class Index(private val activity: WebViewActivity, private val webView: WebView?
         vibe.vibrate(VibrationEffect.createPredefined(VibrationEffect.EFFECT_HEAVY_CLICK))
     }
 
-    /** Display a notification on top  */
+    // 强制横屏/恢复横屏
     @JavascriptInterface
-    fun notification() {
+    fun setScreenHorizontal() {
+        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
     }
 
-    // 强制横屏/恢复横屏
     // 恢复竖屏/恢复竖屏
+    @JavascriptInterface
+    fun setScreenPortrait() {
+        activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    }
 
+    /** Display a notification on top  */
+    @JavascriptInterface
+    fun notification(id: Int, title: String, content: String) {
+//        // Create an explicit intent for an Activity in your app.
+//        val intent = Intent(activity, WebViewActivity::class.java).apply {
+//            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+//        }
+//        val pendingIntent: PendingIntent =
+//            PendingIntent.getActivity(activity, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+
+        val builder = NotificationCompat.Builder(activity, CHANNEL_ID)
+            .setSmallIcon(R.drawable.backup)
+            .setContentTitle(title)
+            .setContentText(content)
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText(content)
+            )
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setAutoCancel(true)
+//            .setContentIntent(pendingIntent)
+
+        with(NotificationManagerCompat.from(activity)) {
+            if (ActivityCompat.checkSelfPermission(
+                    activity,
+                    permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // TODO: Consider calling
+                // ActivityCompat#requestPermissions
+                // here to request the missing permissions, and then overriding
+                // public fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
+                //                                        grantResults: IntArray)
+                // to handle the case where the user grants the permission. See the documentation
+                // for ActivityCompat#requestPermissions for more details.
+
+                return@with
+            }
+            // notificationId is a unique int for each notification that you must define.
+            notify(id, builder.build())
+        }
+    }
+
+    @JavascriptInterface
+    fun notificationAsync(id: Int, title: String, content: String, seconds: Int) {
+        Handler().postDelayed(Runnable {
+            notification(id, title, content)
+        }, (seconds * 1000).toLong())
+    }
 
 }
