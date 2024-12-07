@@ -51,12 +51,12 @@
         <!-- webView 活动-->
         <activity
             android:name=".activities.WebViewActivity"
-            android:screenOrientation="landscape"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.default" />
         <!-- webView IpConfig 活动-->
         <activity
             android:name=".activities.WebViewIPConfigActivity"
-            android:screenOrientation="landscape"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.default" />
         <!-- 扫码活动-->
         <activity
