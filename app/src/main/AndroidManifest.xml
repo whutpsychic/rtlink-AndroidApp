@@ -36,18 +36,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!--UI 目录活动-->
-        <activity
-            android:name=".activities.IndexUIActivity"
-            android:theme="@style/Theme.default" />
-        <!--com 按钮活动-->
-        <activity
-            android:name=".activities.ComButtonActivity"
-            android:theme="@style/Theme.default" />
-        <!--com 对话框活动-->
-        <activity
-            android:name=".activities.ComPopupActivity"
-            android:theme="@style/Theme.default" />
         <!-- webView 活动-->
         <activity
             android:name=".activities.WebViewActivity"
