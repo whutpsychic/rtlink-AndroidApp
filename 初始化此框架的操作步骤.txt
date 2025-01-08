@@ -1,0 +1,18 @@
+ - 基本：打开 Android Studio 初始化一个以空Activity为基础模板的代码库
+	 - 选择框架语言为 kotlin 模式
+ 	 - 注意命名空间
+	 - 注意要选择 apiLevel 30 即支持到 Android 11
+	 - 注意保存路径中不能出现非ASCII码
+ - 复制代码
+	 - 照搬 app/src/main/java 目录下的内容
+	 - 照搬 app/src/main/res 目录下的内容
+ 	 - 照搬 app/src/main/AndroidManifest.xml 目录下的内容
+ - 复制配置文件
+	 - 对比抄写 app/build.gradle.kts 文件内容
+
+------------------------ 试运行 ------------------------
+
+
+
+
+
