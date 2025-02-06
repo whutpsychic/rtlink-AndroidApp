@@ -4,6 +4,7 @@ class GlobalConfig {
     // 静态对象
     companion object {
         // web前端访问地址(默认)
+//        const val WEB_URL: String = "http://www.tencent.com"
 //        const val WEB_URL: String = "http://192.168.0.2:8088"
         const val WEB_URL: String = "http://192.168.1.71:8088"
 

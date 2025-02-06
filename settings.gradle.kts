@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "RtlinkAndroidapp"
+rootProject.name = "Rtlink Android App"
 include(":app")
  

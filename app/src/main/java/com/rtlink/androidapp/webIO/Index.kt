@@ -9,11 +9,13 @@ import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.net.ConnectivityManager
 import android.net.Uri
+import android.os.Build
 import android.os.Handler
 import android.os.VibrationEffect
 import android.os.Vibrator
 import android.webkit.JavascriptInterface
 import android.webkit.WebView
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -143,6 +145,7 @@ class Index(private val activity: WebViewActivity, private val webView: WebView?
     }
 
     /** Get Safe Height  */
+    @RequiresApi(Build.VERSION_CODES.R)
     @JavascriptInterface
     fun getSafeTop() {
         val windowInsets = activity.window.decorView.rootWindowInsets
@@ -159,6 +162,7 @@ class Index(private val activity: WebViewActivity, private val webView: WebView?
     }
 
     /** Vibrate Action  */
+    @RequiresApi(Build.VERSION_CODES.Q)
     @JavascriptInterface
     fun vibrate() {
         val vibe: Vibrator = activity.getSystemService("vibrator") as Vibrator

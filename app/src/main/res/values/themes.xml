@@ -14,5 +14,4 @@
         <!--背景图-->
         <item name="android:windowBackground">@color/white</item>
     </style>
-
 </resources>

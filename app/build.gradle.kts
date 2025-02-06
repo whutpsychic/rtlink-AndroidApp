@@ -9,10 +9,10 @@ android {
 
     defaultConfig {
         applicationId = "com.rtlink.androidapp"
-        minSdk = 30
+        minSdk = 28
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0.0"
+        versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -23,7 +23,6 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -60,16 +59,12 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.constraintlayout)
-    implementation(libs.androidx.appcompat)
-//    implementation("androidx.webkit:webkit:1.9.0")
-//    implementation("com.google.mlkit:barcode-scanning:17.3.0")
-    implementation(libs.webkit)
-    implementation(libs.barcode.scanning)
+    implementation("androidx.webkit:webkit:1.9.0")
+    implementation("com.google.mlkit:barcode-scanning:17.3.0")
     implementation(libs.androidx.camera.view)
     implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.constraintlayout)
     implementation("androidx.camera:camera-camera2:1.4.0")
-    implementation(libs.play.services.cast.framework)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

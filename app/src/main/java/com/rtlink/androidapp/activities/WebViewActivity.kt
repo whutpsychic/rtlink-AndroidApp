@@ -120,6 +120,7 @@ class WebViewActivity : ComponentActivity() {
         webView = findViewById<WebView>(R.id.webView)
         // 注意要启用JS，默认是不启用的，否则将导致某些页面无法显示
         webView?.settings?.javaScriptEnabled = true
+        webView?.settings?.domStorageEnabled = true
 
         // ******** 允许访问本地文件系统（加载本地.html/.css/.js等文件） ********
         webView?.settings?.allowFileAccess = true
@@ -364,17 +365,15 @@ class WebViewActivity : ComponentActivity() {
     private fun createNotificationChannel() {
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is not in the Support Library.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val descriptionText = "Rtlink notification channel."
-            val importance = NotificationManager.IMPORTANCE_DEFAULT
-            val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, importance).apply {
-                description = descriptionText
-            }
-            // Register the channel with the system.
-            val notificationManager: NotificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            notificationManager.createNotificationChannel(channel)
+        val descriptionText = "Rtlink notification channel."
+        val importance = NotificationManager.IMPORTANCE_DEFAULT
+        val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, importance).apply {
+            description = descriptionText
         }
+        // Register the channel with the system.
+        val notificationManager: NotificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.createNotificationChannel(channel)
     }
 
     private fun launchCameraToTakePhoto() {
