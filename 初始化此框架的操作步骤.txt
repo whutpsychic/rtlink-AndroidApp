@@ -1,18 +1,20 @@
- - 基本：打开 Android Studio 初始化一个以空Activity为基础模板的代码库
-	 - 选择框架语言为 kotlin 模式
- 	 - 注意命名空间
-	 - 注意要选择 apiLevel 30 即支持到 Android 11
-	 - 注意保存路径中不能出现非ASCII码
- - 复制代码
-	 - 照搬 app/src/main/java 目录下的内容
-	 - 照搬 app/src/main/res 目录下的内容
- 	 - 照搬 app/src/main/AndroidManifest.xml 目录下的内容
- - 复制配置文件
-	 - 对比抄写 app/build.gradle.kts 文件内容
+【基础】打开 Android Studio 初始化一个以空Activity为基础模板的代码库
 
------------------------- 试运行 ------------------------
+- 选择框架语言为 kotlin 模式
+- 注意命名空间
+- 注意选择 apiLevel 28 即最低可支持到 Android 9
+- 注意保存路径中不能出现非ASCII码
 
+【复制代码】
 
+- 照搬 app/src/main/java 目录下的内容
+- 照搬 app/src/main/res 目录下的内容
+- 照搬 app/src/main/AndroidManifest.xml 目录下的内容
 
+【复制配置文件】
 
+- 对比抄写 app/build.gradle.kts 文件中 dependencies 下的内容
+- 注意有些依赖直接抄写是不直接起作用的，你需要在 Android Studio 中画红线的位置手动引入依赖，全部检查完毕后，对照依赖列表以确保没有落下的部分
+
+【试运行】
 
