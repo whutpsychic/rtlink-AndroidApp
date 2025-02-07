@@ -145,11 +145,11 @@ class Index(private val activity: WebViewActivity, private val webView: WebView?
     }
 
     /** Get Safe Height  */
-    @RequiresApi(Build.VERSION_CODES.R)
     @JavascriptInterface
     fun getSafeTop() {
         val windowInsets = activity.window.decorView.rootWindowInsets
-        val top: Int = windowInsets.getInsets(1).top / 2
+        val top: Int = windowInsets.stableInsetTop / 2;
+
         activity.runOnUiThread {
             webView?.evaluateJavascript("$RAM_NAME.callback.$GET_SAFE_TOP($top)", null)
         }

@@ -29,6 +29,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import com.rtlink.androidapp.GlobalConfig
+import com.rtlink.androidapp.GlobalConfig.Companion.OFFLINE_MODE
 import com.rtlink.androidapp.GlobalConfig.Companion.RAM_NAME
 import com.rtlink.androidapp.GlobalConfig.Companion.WEB_URL
 import com.rtlink.androidapp.R
@@ -115,6 +116,7 @@ class WebViewActivity : ComponentActivity() {
 
         // 向客户索要通知权限
         RequirePermission(this, permission.POST_NOTIFICATIONS, ::createNotificationChannel)
+        RequirePermission(this, permission.WRITE_EXTERNAL_STORAGE)
 
         // 绑定webView实例
         webView = findViewById<WebView>(R.id.webView)
@@ -162,6 +164,8 @@ class WebViewActivity : ComponentActivity() {
                                     }
                                     // 使用图片文件选择器
                                     else {
+                                        // 清空之前照的照片
+                                        currentPhotoUri = Uri.EMPTY;
                                         prepareFileChooser(fileChooserParams.mode, "image/*")
                                     }
                                 }
@@ -218,10 +222,14 @@ class WebViewActivity : ComponentActivity() {
         // 清除缓存
         webView?.clearCache(true)
 
-        // 加载指定地址
-        webView?.loadUrl(getCurrWebUrl())
-        // 加载本地html
-//        webView?.loadUrl("file:///android_asset/index.html")
+        if (OFFLINE_MODE) {
+            // 加载本地html
+            webView?.loadUrl("file:///android_asset/index.html")
+        } else {
+            // 加载指定地址
+            webView?.loadUrl(getCurrWebUrl())
+        }
+
         // 给webJS端安装功能函数
         webView?.addJavascriptInterface(Index(this@WebViewActivity, webView), GlobalConfig.IO_NAME)
 

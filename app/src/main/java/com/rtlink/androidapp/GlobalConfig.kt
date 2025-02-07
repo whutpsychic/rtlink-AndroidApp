@@ -13,5 +13,8 @@ class GlobalConfig {
 
         // RAM名称
         const val RAM_NAME: String = "RTMB"
+
+        // 使用离线模式加载本地 .html 文件
+        const val OFFLINE_MODE: Boolean = false
     }
 }
