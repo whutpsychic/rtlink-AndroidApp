@@ -1,7 +1,6 @@
 package com.rtlink.androidapp.webIO
 
 import android.Manifest.*
-import android.app.PendingIntent
 import android.app.ProgressDialog
 import android.content.Context
 import android.content.Intent
@@ -27,7 +26,7 @@ import com.rtlink.androidapp.activities.WebViewActivity.Companion.CHANNEL_ID
 import com.rtlink.androidapp.activities.WebViewIPConfigActivity
 import com.rtlink.androidapp.utils.LocalStorage
 import com.rtlink.androidapp.utils.makeToast
-import com.rtlink.androidapp.webIO.CallbackKeys.Companion.GET_SAFE_TOP
+import com.rtlink.androidapp.webIO.CallbackKeys.Companion.GET_SAFE_HEIGHTS
 import com.rtlink.androidapp.webIO.CallbackKeys.Companion.MODAL_LOADING
 import com.rtlink.androidapp.webIO.CallbackKeys.Companion.NETWORK_TYPE
 import com.rtlink.androidapp.webIO.CallbackKeys.Companion.READ_LOCAL
@@ -146,12 +145,13 @@ class Index(private val activity: WebViewActivity, private val webView: WebView?
 
     /** Get Safe Height  */
     @JavascriptInterface
-    fun getSafeTop() {
+    fun getSafeHeights() {
         val windowInsets = activity.window.decorView.rootWindowInsets
-        val top: Int = windowInsets.stableInsetTop / 2;
+        val top: Int = windowInsets.systemWindowInsetTop / 2;
+        val bottom: Int = windowInsets.systemWindowInsetBottom / 2;
 
         activity.runOnUiThread {
-            webView?.evaluateJavascript("$RAM_NAME.callback.$GET_SAFE_TOP($top)", null)
+            webView?.evaluateJavascript("$RAM_NAME.callback.$GET_SAFE_HEIGHTS([$top, $bottom])", null)
         }
     }
 
@@ -229,6 +229,13 @@ class Index(private val activity: WebViewActivity, private val webView: WebView?
         Handler().postDelayed(Runnable {
             notification(id, title, content)
         }, (seconds * 1000).toLong())
+    }
+
+    // 获取设备信息
+    @JavascriptInterface
+    fun getDeviceInfo() {
+        println(" --------------------------------------------------------------- getDeviceInfo ")
+        collectDeviceInfo(activity, webView)
     }
 
 }

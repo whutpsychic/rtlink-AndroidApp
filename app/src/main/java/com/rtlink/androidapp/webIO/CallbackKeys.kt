@@ -27,7 +27,11 @@ class CallbackKeys {
         // takePhoto
         const val TAKE_PHOTO: String = "takePhoto$COMMON_KEY"
 
-        // getSafeTop
-        const val GET_SAFE_TOP: String = "getSafeTop$COMMON_KEY"
+        // getSafeHeights
+        const val GET_SAFE_HEIGHTS: String = "getSafeHeights$COMMON_KEY"
+
+        // getDeviceInfo
+        const val GET_DEVICE_INFO: String = "getDeviceInfo$COMMON_KEY"
+
     }
 }
