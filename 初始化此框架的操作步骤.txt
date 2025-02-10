@@ -7,14 +7,23 @@
 
 【复制代码】
 
-- 照搬 app/src/main/java 目录下的内容
-- 照搬 app/src/main/res 目录下的内容
+- 照搬 app/src/main/java 目录下的内容（可粗暴替换）
+- 照搬 app/src/main/res 目录下的内容（然后删除掉瑞太智联的图标）
 - 照搬 app/src/main/AndroidManifest.xml 目录下的内容
 
 【复制配置文件】
 
 - 对比抄写 app/build.gradle.kts 文件中 dependencies 下的内容
 - 注意有些依赖直接抄写是不直接起作用的，你需要在 Android Studio 中画红线的位置手动引入依赖，全部检查完毕后，对照依赖列表以确保没有落下的部分
+
+【替换命名空间】
+- 将 com.rtlink.androidapp 替换为 com.rtlink.<包名>
+
+【检查文件，半自动导入包】
+- /java/activities/ 文件夹下的 ScanningActivity.kt
+- /res/layout/文件夹下的 activity_main.xml
+- /res/layout/文件夹下的 activity_webview_ipconfig.xml 重定向（改名）
+
 
 【试运行】
 
