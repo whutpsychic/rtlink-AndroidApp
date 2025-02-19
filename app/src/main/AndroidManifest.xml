@@ -48,6 +48,7 @@
         <!-- webView 活动-->
         <activity
             android:name=".activities.WebViewActivity"
+            android:configChanges="orientation|screenSize"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.default" />
         <!-- webView IpConfig 活动-->

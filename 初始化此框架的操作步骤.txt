@@ -9,7 +9,7 @@
 
 - 照搬 app/src/main/java 目录下的内容（可粗暴替换）
 - 照搬 app/src/main/res 目录下的内容（然后删除掉瑞太智联的图标）
-- 照搬 app/src/main/AndroidManifest.xml 目录下的内容
+- 照搬 app/src/main/AndroidManifest.xml 文件内容
 
 【复制配置文件】
 
