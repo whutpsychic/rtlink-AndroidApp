@@ -183,7 +183,7 @@ class Index(private val activity: WebViewActivity, private val webView: WebView?
 
     /** Display a notification on top  */
     @JavascriptInterface
-    fun notification(id: Int, title: String, content: String) {
+    fun notificationAsync(id: Int, title: String, content: String) {
 //        // Create an explicit intent for an Activity in your app.
 //        val intent = Intent(activity, WebViewActivity::class.java).apply {
 //            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -225,16 +225,16 @@ class Index(private val activity: WebViewActivity, private val webView: WebView?
     }
 
     @JavascriptInterface
-    fun notificationAsync(id: Int, title: String, content: String, seconds: Int) {
+    fun notification(id: Int, title: String, content: String, seconds: Int) {
         Handler().postDelayed(Runnable {
-            notification(id, title, content)
+            notificationAsync(id, title, content)
         }, (seconds * 1000).toLong())
     }
 
     // 获取设备信息
     @JavascriptInterface
     fun getDeviceInfo() {
-        println(" --------------------------------------------------------------- getDeviceInfo ")
+//        println(" --------------------------------------------------------------- getDeviceInfo ")
         collectDeviceInfo(activity, webView)
     }
 

@@ -13,10 +13,14 @@ fun modalConfirmFn(title: String, content: String, activity: ComponentActivity, 
         .setTitle(title)
         .setMessage(content)
         .setCancelable(false)
-        .setNegativeButton("取消", null)
+        .setNegativeButton("取消") { _, _ ->
+            activity.runOnUiThread {
+                webView?.evaluateJavascript("${RAM_NAME}.callback.${MODAL_CONFIRM}(false)", null)
+            }
+        }
         .setPositiveButton("确定") { _, _ ->
             activity.runOnUiThread {
-                webView?.evaluateJavascript("${RAM_NAME}.callback.${MODAL_CONFIRM}()", null)
+                webView?.evaluateJavascript("${RAM_NAME}.callback.${MODAL_CONFIRM}(true)", null)
             }
         }
         .create()
