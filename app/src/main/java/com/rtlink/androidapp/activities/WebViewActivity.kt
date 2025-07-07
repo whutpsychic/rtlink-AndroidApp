@@ -18,12 +18,14 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.view.View
 import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.TextView
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
@@ -91,6 +93,7 @@ class WebViewActivity : ComponentActivity() {
 
     // webView 实例
     private var webView: WebView? = null
+    private var tvLoading: TextView? = null
 
     // finish函数触发次数优化（使之仅触发一次）
     private var finishedAlready: Boolean = false
@@ -120,6 +123,8 @@ class WebViewActivity : ComponentActivity() {
 
         // 绑定webView实例
         webView = findViewById<WebView>(R.id.webView)
+        tvLoading = findViewById(R.id.tv_loading);
+
         // 注意要启用JS，默认是不启用的，否则将导致某些页面无法显示
         webView?.settings?.javaScriptEnabled = true
         webView?.settings?.domStorageEnabled = true
@@ -194,15 +199,18 @@ class WebViewActivity : ComponentActivity() {
             ) {
                 super.onReceivedError(view, request, error)
                 // error, can't connect to the page
+                tvLoading?.text = "加载失败，请重试"; // 错误时修改提示文字
             }
 
             override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                 super.onPageStarted(view, url, favicon)
                 // page loading started
+                tvLoading?.visibility = View.VISIBLE; // 显示加载提示
             }
 
             // 加载完成后
             override fun onPageFinished(view: WebView, url: String) {
+                tvLoading?.visibility = View.GONE; // 隐藏加载提示
                 if (finishedAlready) {
                     return
                 }
