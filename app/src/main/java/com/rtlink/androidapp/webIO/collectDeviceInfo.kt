@@ -32,7 +32,7 @@ fun collectDeviceInfo(activity: ComponentActivity, webView: WebView?) {
     }
 }
 
-private fun getAndroidVersionByApiLevel(lvl: Int): String {
+fun getAndroidVersionByApiLevel(lvl: Int): String {
     when (lvl) {
         // ------------- 主要版本 -------------
         35 -> {

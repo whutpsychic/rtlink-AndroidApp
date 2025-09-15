@@ -23,6 +23,7 @@ import android.webkit.ValueCallback
 import android.webkit.WebChromeClient
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.TextView
@@ -93,7 +94,7 @@ class WebViewActivity : ComponentActivity() {
 
     // webView 实例
     private var webView: WebView? = null
-    private var tvLoading: TextView? = null
+    private var tvLoading: TextView? = null;
 
     // finish函数触发次数优化（使之仅触发一次）
     private var finishedAlready: Boolean = false
@@ -117,8 +118,9 @@ class WebViewActivity : ComponentActivity() {
         // 显示注册的页面
         setContentView(R.layout.activity_webview)
 
-        // 向客户索要通知权限
-        RequirePermission(this, permission.POST_NOTIFICATIONS, ::createNotificationChannel)
+        // 创建通知通道
+        createNotificationChannel()
+        // 向用户索要写入权限
         RequirePermission(this, permission.WRITE_EXTERNAL_STORAGE)
 
         // 绑定webView实例
@@ -127,13 +129,17 @@ class WebViewActivity : ComponentActivity() {
 
         // 注意要启用JS，默认是不启用的，否则将导致某些页面无法显示
         webView?.settings?.javaScriptEnabled = true
+        // 缓存模式
+        webView?.settings?.cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK;
+        // 启用DOM存储
         webView?.settings?.domStorageEnabled = true
+        // 启用数据库存储
+        webView?.settings?.databaseEnabled = true
 
         // ******** 允许访问本地文件系统（加载本地.html/.css/.js等文件） ********
         webView?.settings?.allowFileAccess = true
         webView?.settings?.allowFileAccessFromFileURLs = true
         // **************************************************************
-
         // 启用此行代码可显示原生web端的一些功能比如：显示alert()
         webView?.webChromeClient = object : WebChromeClient() {
 
@@ -206,6 +212,7 @@ class WebViewActivity : ComponentActivity() {
                 super.onPageStarted(view, url, favicon)
                 // page loading started
                 tvLoading?.visibility = View.VISIBLE; // 显示加载提示
+                tvLoading?.text = "加载中，请稍候..."; // 错误时修改提示文字
             }
 
             // 加载完成后
@@ -228,7 +235,7 @@ class WebViewActivity : ComponentActivity() {
         }
 
         // 清除缓存
-        webView?.clearCache(true)
+//        webView?.clearCache(true)
 
         if (OFFLINE_MODE) {
             // 加载本地html
@@ -236,6 +243,10 @@ class WebViewActivity : ComponentActivity() {
         } else {
             // 加载指定地址
             webView?.loadUrl(getCurrWebUrl())
+//            val brand: String? = Build.BRAND
+//            println(" ------------------------------------------------------- brand: $brand ")
+//            tvLoading?.visibility = View.VISIBLE; // 显示
+//            tvLoading?.text = brand
         }
 
         // 给webJS端安装功能函数
@@ -386,6 +397,7 @@ class WebViewActivity : ComponentActivity() {
         val channel = NotificationChannel(CHANNEL_ID, CHANNEL_NAME, importance).apply {
             description = descriptionText
         }
+        channel.setShowBadge(true)
         // Register the channel with the system.
         val notificationManager: NotificationManager =
             getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
@@ -446,13 +458,18 @@ class WebViewActivity : ComponentActivity() {
         fileChooseLauncher.launch(chooserIntent)
     }
 
-    // 劫持 webView 后退事件（未完成）
+    // 劫持 webView 后退事件
     @Deprecated("Deprecated in Java")
     override fun onBackPressed() {
-        println(" =========================================================== ")
         if (webView != null) {
-            if (webView!!.canGoBack()) webView!!.goBack() else super.onBackPressed()
+            if (webView!!.canGoBack()) webView!!.goBack()
         }
+    }
+
+    // 任务放后台仍继续运行
+    override fun onPause() {
+        super.onPause()
+//        moveTaskToBack(true)
     }
 
 }
